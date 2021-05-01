@@ -61,9 +61,7 @@ int main(int argc, char *argv[])
             fscanf(file, "%s\n", &processID);
 
         }
-        printf(command);
-        printf("\n");
-
+        
         fscanf(file, "%s", &command); // priming read
     }
     
