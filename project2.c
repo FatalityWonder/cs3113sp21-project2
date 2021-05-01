@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
     {
         commandList[i].pid = "empty";
         commandList[i].size = 0;
-        printf("%d\n", i);
     }
 
     int nextHold = 0;
