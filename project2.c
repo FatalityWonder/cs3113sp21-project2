@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     struct Command* commandList; 
     commandList = malloc(sizeof(Command) * allocate); // / max size of the array requested
     
-    // initialize array, 0 means empty, 1 means occupied
+    // initialize array
     for (int i = 0; i < allocate; ++i)
     {
         commandList[i].pid = "empty";
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
                         // check if entire array is empty
                         if (i + 1 == allocate)
                         {
-                            printf("(%d,%d)", start, end - start + 1);
+                            printf("(%d,%d)", end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
                         // check if entire array is occupied
                         if (i + 1 == allocate)
                         {
-                            printf("(%s,%d,%d)", commandList[start].pid, start, end - start + 1);
+                            printf("(%s,%d,%d)", commandList[start].pid, end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
