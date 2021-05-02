@@ -34,8 +34,8 @@ int main(int argc, char *argv[])
     int nextHold = 0;
     int returned; // value returned from algorithms and findPID
 
-    //fscanf(file, "%s", &command); // priming read
-    while (fscanf(file, "%s", &command) != EOF)//!feof(file))
+    fscanf(file, "%s", &command); // priming read
+    while (!feof(file))
     {
         if (strcmp(command, "REQUEST") == 0)
         {
@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
             }
         }
         
-        //fscanf(file, "%s", &command); // priming read
+        fscanf(file, "%s", &command); // priming read
     }
     
     // close file
