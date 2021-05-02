@@ -48,15 +48,15 @@ int main(int argc, char *argv[])
             }
             else if (strcmp(algorithm, "BESTFIT") == 0)
             {
-                returned = nextFit(commandList, allocatePID, allocate, nextHold);
+                returned = bestFit(commandList, allocatePID, allocate);
             }
             else if (strcmp(algorithm, "WORSTFIT") == 0)
             {
-                returned = bestFit(commandList, allocatePID, allocate);
+                returned = worstFit(commandList, allocatePID, allocate);
             }
             else if (strcmp(algorithm, "NEXTFIT") == 0)
             {
-                returned = worstFit(commandList, allocatePID, allocate);
+                returned = nextFit(commandList, allocatePID, allocate, nextHold);
             }
 
             // no valid space to put element
@@ -431,6 +431,12 @@ int bestFit(Command *array, int processSize, int totalSize)
             if ((end - start + 1) >= processSize && currentSize < smallestSize)
             {
                 if (i + 1 < totalSize && array[i + 1].size != 0)
+                {
+                    smallestLocation = start;
+                    smallestSize = currentSize;
+                }
+                // check if end of array is best fit
+                if (i + 1 == totalSize)
                 {
                     smallestLocation = start;
                     smallestSize = currentSize;
