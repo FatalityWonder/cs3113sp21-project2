@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
                         }
                         else if (start != -1 && end != -1)
                         {
-                            printf("(%s, %d, %d) ", commandList[start].pid, 1, start);
+                            printf("(%d, %d) ", commandList[start].pid, 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
