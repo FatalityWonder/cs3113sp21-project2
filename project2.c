@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
                 strcpy(currPID, "empty"); //initialize as empty
 
                 // search for occupied space
-                for (int i = 0; i <= allocate; ++i)
+                for (int i = 0; i < allocate; ++i)
                 {  
                     // start is blank and occupied area found
                     if (commandList[i].size != 0 && start == -1)
@@ -191,9 +191,9 @@ int main(int argc, char *argv[])
                         end = i;
 
                         // check if entire array is occupied
-                        if (i == allocate)
+                        if (i + 1 == allocate)
                         {
-                            printf("(%s, %d, %d) ", commandList[start].pid, end - start, start);
+                            printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
