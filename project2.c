@@ -43,13 +43,21 @@ int main(int argc, char *argv[])
          
             // run correct algorithm
             if (strcmp(algorithm, "FIRSTFIT") == 0)
+            {
                 returned = firstFit(commandList, allocatePID, allocate);
+            }
             else if (strcmp(algorithm, "BESTFIT") == 0)
+            {
                 returned = nextFit(commandList, allocatePID, allocate, nextHold);
+            }
             else if (strcmp(algorithm, "WORSTFIT") == 0)
+            {
                 returned = bestFit(commandList, allocatePID, allocate);
+            }
             else if (strcmp(algorithm, "NEXTFIT") == 0)
+            {
                 returned = worstFit(commandList, allocatePID, allocate);
+            }
 
             // no valid space to put element
             if (returned == -1)
@@ -62,6 +70,11 @@ int main(int argc, char *argv[])
                     strcpy(commandList[i].pid, processID);
                     commandList[i].size = allocatePID;
                 }   
+
+                if (strcmp(algorithm, "NEXTFIT") == 0)
+                {   
+                    nextHold = allocatePID + returned;
+                }
 
                 printf("ALLOCATED %s %d\n", processID, returned);
             }
@@ -144,6 +157,11 @@ int main(int argc, char *argv[])
                 if (printed == 0)
                 {
                     printf("FULL");
+
+                    if (strcmp(algorithm, "NEXTFIT") == 0)
+                    {
+                        nextHold = 0;
+                    }
                 }
 
                 // end with new line
@@ -248,6 +266,7 @@ int firstFit(Command *array, int processSize, int totalSize)
     int start = -1;
     int end = -1;
 
+    // porocess does not fit at all in array
     if (processSize > totalSize)
         return -1;
 
@@ -297,6 +316,7 @@ int nextFit(Command *array, int processSize, int totalSize, int currentLocation)
     int start = -1;
     int end = -1;
 
+    // porocess does not fit at all in array
     if (processSize > totalSize)
         return -1;
 
@@ -340,7 +360,40 @@ int nextFit(Command *array, int processSize, int totalSize, int currentLocation)
 
     for (int i = 0; i < currentLocation; ++i)
     {
+        // start is blank and area found
+        if (array[i].size == 0 && start == -1)
+        {
+            start = i;
+            end = i;
+        }
+        // in empty block of array
+        else if (array[i].size == 0)
+        {
+            end = i;
 
+            // check if array fits in current location, if so return
+            if ((end - start + 1) >= processSize)
+                return start;
+
+            // check if entire array is empty
+            if (i + 1 == totalSize - currentLocation && start == 0)
+                return currentLocation + 1;  
+        }         
+        // occupied space in array
+        else
+        {
+            // check if previously went through empty block in array
+            if (start != end || (start > -1 && end > -1))
+            {
+                // check if array fits in current location, if so return
+                if ((end - start + 1) >= processSize)
+                    return start;
+
+                // process does not fit
+                start = -1;
+                end = -1;
+            }
+        }
     } 
     
     return -1;
@@ -348,22 +401,131 @@ int nextFit(Command *array, int processSize, int totalSize, int currentLocation)
 
 int bestFit(Command *array, int processSize, int totalSize)
 {
+    // start and end of blank area
+    int start = -1;
+    int end = -1;
+    int currentSize = 0;    // size of current found block
+    int smallestSize = totalSize;    // size of array is minimum
+    int smallestLocation = -1 ; // location of smallest free block, -1 if no valid locations found
+
+    // porocess does not fit at all in array
+    if (processSize > totalSize)
+        return -1;
+
     for (int i = 0; i < totalSize; ++i)
-    {
+    {    
+        // start is blank and area found
+        if (array[i].size == 0 && start == -1)
+        {
+            start = i;
+            end = i;
+            ++currentSize;
+        }
+        // in empty block of array
+        else if (array[i].size == 0)
+        {
+            end = i;
+            ++currentSize;
 
-    } 
+            // check if array fits in current location
+            if ((end - start + 1) >= processSize && currentSize < smallestSize)
+            {
+                if (i + 1 < totalSize && array[i + 1].size != 0)
+                {
+                    smallestLocation = start;
+                    smallestSize = currentSize;
+                }
+            }
 
-    return -1;
+            // check if entire array is empty
+            if (i + 1 == totalSize && start == 0)
+                return 0;  
+        }         
+        // occupied space in array
+        else
+        {
+            // check if previously went through empty block in array
+            if (start != end || (start > -1 && end > -1))
+            {
+                // check if array fits in current location
+                if ((end - start + 1) >= processSize && currentSize < smallestSize)
+                {
+                    smallestLocation = start;
+                    smallestSize = currentSize;
+                }
+
+                // process does not fit
+                start = -1;
+                end = -1;
+                currentSize = 0;
+            }
+        }
+    }   
+
+    return smallestLocation;
 }
 
 int worstFit(Command *array, int processSize, int totalSize)
 {
+    // start and end of blank area
+    int start = -1;
+    int end = -1;
+    int currentSize = 0;    // size of current found block
+    int largestSize = 0;    // size of largest found block  
+    int largestLocation = -1 ; // location of largest free block, -1 if no valid locations found
+
+    // porocess does not fit at all in array
+    if (processSize > totalSize)
+        return -1;
+
     for (int i = 0; i < totalSize; ++i)
-    {
+    {    
+        // start is blank and area found
+        if (array[i].size == 0 && start == -1)
+        {
+            start = i;
+            end = i;
+            ++currentSize;
+        }
+        // in empty block of array
+        else if (array[i].size == 0)
+        {
+            end = i;
+            ++currentSize;
 
-    } 
+            // check if array fits in current location
+            if ((end - start + 1) >= processSize && currentSize > largestSize)
+            {
+                largestLocation = start;
+                largestSize = currentSize;
+            }
 
-    return -1;
+            // check if entire array is empty
+            if (i + 1 == totalSize && start == 0)
+                return 0;  
+        }         
+        // occupied space in array
+        else
+        {
+            // check if previously went through empty block in array
+            if (start != end || (start > -1 && end > -1))
+            {
+                // check if array fits in current location
+                if ((end - start + 1) >= processSize && currentSize > largestSize)
+                {
+                    largestLocation = start;
+                    largestSize = currentSize;
+                }
+
+                // process does not fit
+                start = -1;
+                end = -1;
+                currentSize = 0;
+            }
+        }
+    }   
+
+    return largestLocation;
 }
 
 // Searches for location of processID and returns it. Returns -1 if not found
