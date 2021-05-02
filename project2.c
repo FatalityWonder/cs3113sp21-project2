@@ -3,7 +3,7 @@
 
 typedef struct Command
 {
-    char *pid;
+    char pid[16];
     unsigned int size;
 } Command;
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     // initialize array
     for (int i = 0; i < allocate; ++i)
     {
-        commandList[i].pid = "empty";
+        strcpy(commandList[i].pid, "empty");
         commandList[i].size = 0;
     }
 
@@ -57,9 +57,9 @@ int main(int argc, char *argv[])
             else
             {
                 // valid space to put element
-                for (int i = returned; i < allocatePID && i < allocate; ++i)
+                for (int i = returned; i < allocatePID; ++i)
                 {
-                    commandList[i].pid = processID;
+                    strcpy(commandList[i].pid, processID);
                     commandList[i].size = allocatePID;
                 }   
 
@@ -85,10 +85,10 @@ int main(int argc, char *argv[])
                 // reset process data
                 for (int i = returned; i < (returned + size); ++i)
                 {
-                    commandList[i].pid = "empty";
+                    strcpy(commandList[i].pid, "empty");
                     commandList[i].size = 0;
                 }
-                printf("FREE %s,%d,%d\n", processID, size, returned);
+                printf("FREE %s %d %d\n", processID, size, returned);
             }
         }
         else if (strcmp(command, "LIST") == 0)
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
                         // check if entire array is empty
                         if (i + 1 == allocate)
                         {
-                            printf("(%d,%d)", end - start + 1, start);
+                            printf("(%d, %d)", end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
                         // check if previously went through empty block in array
                         if (start != end || (start > -1 && end > -1))
                         {
-                            printf("(%d,%d)", start, end - start + 1);
+                            printf("(%d, %d)", start, end - start + 1);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
                         // check if entire array is occupied
                         if (i + 1 == allocate)
                         {
-                            printf("(%s,%d,%d)", commandList[start].pid, end - start + 1, start);
+                            printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
                         // check if previously went through occupied block in array
                         if (start != end || (start > -1 && end > -1))
                         {
-                            printf("(%s,%d,%d)", commandList[start].pid, start, end - start + 1);
+                            printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -216,7 +216,7 @@ int main(int argc, char *argv[])
             else
             {
                 int size = getSize(commandList, returned);
-                printf("(%s,%d,%d\n)", processID, size, returned);
+                printf("(%s, %d, %d)\n", processID, size, returned);
             }
         }
 
@@ -232,7 +232,6 @@ int firstFit(Command *array, int processSize, int totalSize)
     // start and end of blank area
     int start = -1;
     int end = -1;
-    int printed = 0;
 
     for (int i = 0; i < totalSize; ++i)
     {    
@@ -248,8 +247,8 @@ int firstFit(Command *array, int processSize, int totalSize)
             end = i;
 
             // check if array fits in current location, if so return
-            if (end - start + 1 >= processSize)
-                    return start;
+            if ((end - start + 1) >= processSize)
+                return start;
 
             // check if entire array is empty
             if (i + 1 == totalSize && start == 0)
@@ -262,9 +261,10 @@ int firstFit(Command *array, int processSize, int totalSize)
             if (start != end || (start > -1 && end > -1))
             {
                 // check if array fits in current location, if so return
-                if (end - start + 1 >= processSize)
+                if ((end - start + 1) >= processSize)
                     return start;
 
+                // process does not fit
                 start = -1;
                 end = -1;
             }
