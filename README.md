@@ -10,3 +10,5 @@ Make all
 Sources = No sources used
 
 Bugs: Unknown Bug causing the autograder to kill the program (could possibly be due to some inefficiencies in using a very large array, however this more accurately models the structure of memory)
+
+assumptions : program will always read from a file
