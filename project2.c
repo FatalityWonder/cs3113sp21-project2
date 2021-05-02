@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
             else
             {
                 // valid space to put element
-                for (int i = returned; i < allocatePID; ++i)
+                for (int i = returned; i < allocatePID + returned; ++i)
                 {
                     strcpy(commandList[i].pid, processID);
                     commandList[i].size = allocatePID;
@@ -101,9 +101,10 @@ int main(int argc, char *argv[])
                 int start = -1;
                 int end = -1;
                 int printed = 0;
+                int i = 0; // iterator
 
                 // search for available space
-                for (int i = 0; i < allocate; ++i)
+                for (i; i <= allocate; ++i)
                 {   
                     // start is blank and area found
                     if (commandList[i].size == 0 && start == -1)
@@ -117,9 +118,9 @@ int main(int argc, char *argv[])
                         end = i;
 
                         // check if entire array is empty
-                        if (i + 1 == allocate)
+                        if (i == allocate)
                         {
-                            printf("(%d, %d)", end - start + 1, start);
+                            printf("(%d, %d) ", end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -129,9 +130,9 @@ int main(int argc, char *argv[])
                     else
                     {
                         // check if previously went through empty block in array
-                        if (start != end || (start > -1 && end > -1))
+                        if (start != end)
                         {
-                            printf("(%d, %d)", start, end - start + 1);
+                            printf("(%d, %d) ", end - start + 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -154,10 +155,12 @@ int main(int argc, char *argv[])
                 int start = -1;
                 int end = -1;
                 int printed = 0;
+                char currPID[16];  // check if multiple PID connected
+                strcpy(currPID, "empty"); //initialize as empty
 
                 // search for occupied space
-                for (int i = 0; i < allocate; ++i)
-                {   
+                for (int i = 0; i <= allocate; ++i)
+                {  
                     // start is blank and occupied area found
                     if (commandList[i].size != 0 && start == -1)
                     {
@@ -170,19 +173,27 @@ int main(int argc, char *argv[])
                         end = i;
 
                         // check if entire array is occupied
-                        if (i + 1 == allocate)
+                        if (i == allocate)
                         {
-                            printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
+                            printf("(%s, %d, %d) ", commandList[start].pid, end - start, start);
                             ++printed;
                             start = -1;
                             end = -1;
+                        }
+                        // check if PID changed
+                        else if (strcmp(currPID, "empty") != 0 && strcmp(currPID, commandList[i].pid) != 0)
+                        {
+                            printf("(%s, %d, %d) ", commandList[start].pid, end - start, start);
+                            ++printed;
+                            start = i;
+                            end = i;
                         }
                     }
                     // blank space in array
                     else
                     {
                         // check if previously went through occupied block in array
-                        if (start != end || (start > -1 && end > -1))
+                        if (start != end)
                         {
                             printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
                             ++printed;
@@ -190,6 +201,8 @@ int main(int argc, char *argv[])
                             end = -1;
                         }
                     }
+
+                    strcpy(currPID, commandList[i].pid);
                 }
 
                 // no occupied space in array
@@ -219,7 +232,9 @@ int main(int argc, char *argv[])
                 printf("(%s, %d, %d)\n", processID, size, returned);
             }
         }
-        
+        //printf(command);
+        //("\n");
+
         fscanf(file, "%s", &command); // priming read
     }
     
@@ -279,9 +294,48 @@ int firstFit(Command *array, int processSize, int totalSize)
 
 int nextFit(Command *array, int processSize, int totalSize, int currentLocation)
 {
+    int start = -1;
+    int end = -1;
+
+    if (processSize > totalSize)
+        return -1;
+
     for (int i = currentLocation; i < totalSize; ++i)
     {
+        // start is blank and area found
+        if (array[i].size == 0 && start == -1)
+        {
+            start = i;
+            end = i;
+        }
+        // in empty block of array
+        else if (array[i].size == 0)
+        {
+            end = i;
 
+            // check if array fits in current location, if so return
+            if ((end - start + 1) >= processSize)
+                return start;
+
+            // check if entire array is empty
+            if (i + 1 == totalSize - currentLocation && start == 0)
+                return currentLocation + 1;  
+        }         
+        // occupied space in array
+        else
+        {
+            // check if previously went through empty block in array
+            if (start != end || (start > -1 && end > -1))
+            {
+                // check if array fits in current location, if so return
+                if ((end - start + 1) >= processSize)
+                    return start;
+
+                // process does not fit
+                start = -1;
+                end = -1;
+            }
+        }
     } 
 
     for (int i = 0; i < currentLocation; ++i)
