@@ -150,6 +150,13 @@ int main(int argc, char *argv[])
                             start = -1;
                             end = -1;
                         }
+                        else if (start != -1 && end != -1)
+                        {
+                            printf("(%s, %d, %d) ", commandList[start].pid, 1, start);
+                            ++printed;
+                            start = -1;
+                            end = -1;
+                        }
                     }
                 }
 
@@ -214,6 +221,13 @@ int main(int argc, char *argv[])
                         if (start != end)
                         {
                             printf("(%s, %d, %d) ", commandList[start].pid, end - start + 1, start);
+                            ++printed;
+                            start = -1;
+                            end = -1;
+                        }
+                        else if (start != -1 && end != -1)
+                        {
+                            printf("(%s, %d, %d) ", commandList[start].pid, 1, start);
                             ++printed;
                             start = -1;
                             end = -1;
@@ -537,8 +551,6 @@ int worstFit(Command *array, int processSize, int totalSize)
 // Searches for location of processID and returns it. Returns -1 if not found
 int findPID(Command *array, char processID[], int totalSize)
 {
-    int found;
-
     for (int i = 0; i < totalSize; ++i)
     {
         if (strcmp(processID, array[i].pid) == 0)
