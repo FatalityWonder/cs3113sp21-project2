@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
                 printf("(%s, %d, %d)\n", processID, size, returned);
             }
         }
-
+        
         fscanf(file, "%s", &command); // priming read
     }
     
@@ -232,6 +232,9 @@ int firstFit(Command *array, int processSize, int totalSize)
     // start and end of blank area
     int start = -1;
     int end = -1;
+
+    if (processSize > totalSize)
+        return -1;
 
     for (int i = 0; i < totalSize; ++i)
     {    
