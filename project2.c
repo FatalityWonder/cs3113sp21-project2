@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                         // check if entire array is empty
                         if (i == allocate)
                         {
-                            printf("(%d, %d) ", end - start + 1, start);
+                            printf("(%d, %d) ", end - start, start);
                             ++printed;
                             start = -1;
                             end = -1;
